@@ -51,10 +51,17 @@ class BaseGene(object):
             setattr(self, a.name, a.mutate_value(v, config))
 
     def copy(self):
-        new_gene = self.__class__(self.key)
+        # print "\nENTERING COPY"
+        if (self.__class__ == DHNNodeGene):
+            # print("\tOLD NODE GENE:", self, self.key, self.cppn_tuple)
+            new_gene = self.__class__(self.key, self.cppn_tuple)
+            # print("\tNEW NODE GENE:", new_gene.key,new_gene.cppn_tuple)
+        else:
+            # print("\tOLD CONNECTION GENE:", self, self.key)
+            new_gene = self.__class__(self.key)
+            # print("\tNEW CONNECTION GENE:", new_gene.key)
         for a in self._gene_attributes:
             setattr(new_gene, a.name, getattr(self, a.name))
-
         return new_gene
 
     def crossover(self, gene2):
@@ -63,7 +70,11 @@ class BaseGene(object):
 
         # Note: we use "a if random() > 0.5 else b" instead of choice((a, b))
         # here because `choice` is substantially slower.
-        new_gene = self.__class__(self.key)
+        
+        if (self.__class__ == DHNNodeGene):
+            new_gene = self.__class__(self.key, self.cppn_tuple)
+        else:
+            new_gene = self.__class__(self.key)
         for a in self._gene_attributes:
             if random() > 0.5:
                 setattr(new_gene, a.name, getattr(self, a.name))
@@ -76,13 +87,14 @@ class BaseGene(object):
 # TODO: Should these be in the nn module?  iznn and ctrnn can have additional attributes.
 
 
-class DefaultNodeGene(BaseGene):
+class DHNNodeGene(BaseGene):
     _gene_attributes = [FloatAttribute('bias'),
                         FloatAttribute('response'),
-                        StringAttribute('activation', options='sigmoid'),
+                        StringAttribute('activation', options=['sigmoid','dhngauss','dhngauss2','linear','tanh']),
                         StringAttribute('aggregation', options='sum')]
 
-    def __init__(self, key):
+    def __init__(self, key, cppn_tuple=((),())):
+        self.cppn_tuple = cppn_tuple
         assert isinstance(key, int), "DefaultNodeGene key must be an int, not {!r}".format(key)
         BaseGene.__init__(self, key)
 
@@ -93,7 +105,6 @@ class DefaultNodeGene(BaseGene):
         if self.aggregation != other.aggregation:
             d += 1.0
         return d * config.compatibility_weight_coefficient
-
 
 # TODO: Do an ablation study to determine whether the enabled setting is
 # important--presumably mutations that set the weight to near zero could

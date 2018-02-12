@@ -1,12 +1,12 @@
-#--- parameters for the XOR-2 experiment ---#
+#--- parameters for the NEAT XOR experiment  ---#
 
 [NEAT]
 fitness_criterion     = max
-fitness_threshold     = 3.9
+fitness_threshold     = 0.975
 pop_size              = 150
 reset_on_extinction   = False
 
-[DHNGenome]
+[DefaultGenome]
 # node activation options
 activation_default      = sigmoid
 activation_mutate_rate  = 0.0
@@ -47,7 +47,7 @@ node_delete_prob        = 0.2
 
 # network parameters
 num_hidden              = 0
-num_inputs              = 2
+num_inputs              = 3
 num_outputs             = 1
 
 # node response options
@@ -68,19 +68,15 @@ weight_mutate_power     = 0.5
 weight_mutate_rate      = 0.8
 weight_replace_rate     = 0.1
 
-# type options
-type_mutate_rate = 0.0
-type_default = input
-
 [DefaultSpeciesSet]
 compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
 max_stagnation       = 20
-species_elitism      = 2
+species_elitism      = 15
 
 [DefaultReproduction]
-elitism            = 2
+elitism            = 15
 survival_threshold = 0.2
 

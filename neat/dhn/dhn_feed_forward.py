@@ -3,27 +3,34 @@ from neat.six_util import itervalues
 
 
 class FeedForwardNetwork(object):
-    def __init__(self, inputs, outputs, node_evals):
+    '''
+    Class for a feed forward CPPN
+    '''
+    def __init__(self, inputs, outputs, node_evals, nodes=None):
         self.input_nodes = inputs
         self.output_nodes = outputs
         self.node_evals = node_evals
         self.values = dict((key, 0.0) for key in inputs + outputs)
+        self.nodes = nodes
 
     def activate(self, inputs):
         if len(self.input_nodes) != len(inputs):
             raise RuntimeError("Expected {0:n} inputs, got {1:n}".format(len(self.input_nodes), len(inputs)))
 
         for k, v in zip(self.input_nodes, inputs):
+            # print("CPPN Input Node and Inputs", (k,v))
             self.values[k] = v
-
+        # print("CPPN Values Now", self.values)
         for node, act_func, agg_func, bias, response, links in self.node_evals:
             node_inputs = []
+            # print("Node:", node)
             for i, w in links:
+                # print("CPPN Link",i,w)
                 node_inputs.append(self.values[i] * w)
             s = agg_func(node_inputs)
             self.values[node] = act_func(bias + response * s)
 
-        return [self.values[i] for i in self.output_nodes]
+        return self.values
 
     @staticmethod
     def create(genome, config):
@@ -51,6 +58,7 @@ class FeedForwardNetwork(object):
                 activation_function = config.genome_config.activation_defs.get(ng.activation)
                 node_evals.append((node, activation_function, aggregation_function, ng.bias, ng.response, inputs))
 
-        return FeedForwardNetwork(config.genome_config.input_keys, config.genome_config.output_keys, node_evals)
-
-
+        # originally had output keys coming from config.genome_config.output_keys but now just coming from
+        # genome.output_keys
+        return FeedForwardNetwork(genome.input_keys, genome.output_keys, node_evals, 
+                                    genome.nodes)

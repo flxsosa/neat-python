@@ -4,6 +4,10 @@
 
 from __future__ import print_function
 import neat
+import sys
+sys.path.insert(0, "../../neat/dhn/")
+from dhngenome import DHNGenome
+from dhn_feed_forward import FeedForwardNetwork
 
 # 2-input XOR inputs and expected outputs.
 xor_inputs = [(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)]
@@ -20,7 +24,7 @@ def eval_genomes(genomes, config):
 
 
 # Load configuration.
-config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+config = neat.Config(DHNGenome, neat.DefaultReproduction,
                      neat.DefaultSpeciesSet, neat.DefaultStagnation,
                      'config-feedforward')
 
@@ -38,7 +42,7 @@ print('\nBest genome:\n{!s}'.format(winner))
 
 # Show output of the most fit genome against training data.
 print('\nOutput:')
-winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+winner_net = FeedForwardNetwork.create(winner, config)
 for xi, xo in zip(xor_inputs, xor_outputs):
     output = winner_net.activate(xi)
     print("  input {!r}, expected output {!r}, got {!r}".format(xi, xo, output))

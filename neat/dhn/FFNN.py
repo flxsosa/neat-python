@@ -3,20 +3,25 @@ from neat.six_util import itervalues
 
 
 class FeedForwardNetwork(object):
+    '''
+    Class for a feed forward Substrate
+    '''
     def __init__(self, inputs, outputs, node_evals):
         self.input_nodes = inputs
         self.output_nodes = outputs
         self.node_evals = node_evals
         self.values = dict((key, 0.0) for key in inputs + outputs)
 
-    def activate(self, inputs):
+    def activate(self, inputs):          
         if len(self.input_nodes) != len(inputs):
             raise RuntimeError("Expected {0:n} inputs, got {1:n}".format(len(self.input_nodes), len(inputs)))
 
         for k, v in zip(self.input_nodes, inputs):
             self.values[k] = v
-
-        for node, act_func, agg_func, bias, response, links in self.node_evals:
+        
+        evaluations = self.node_evals[::-1]
+        
+        for node, act_func, agg_func, bias, response, links in evaluations:
             node_inputs = []
             for i, w in links:
                 node_inputs.append(self.values[i] * w)

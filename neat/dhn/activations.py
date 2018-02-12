@@ -9,16 +9,25 @@ import types
 
 
 def sigmoid_activation(z):
+    '''
+    Hard sigmoid function [-1, 1]
+    '''
     z = max(-60.0, min(60.0, 5.0 * z))
     return 1.0 / (1.0 + math.exp(-z))
 
 
 def tanh_activation(z):
+    '''
+    Hard hyperbolic tanger function [-1, 1]
+    '''
     z = max(-60.0, min(60.0, 2.5 * z))
     return math.tanh(z)
 
 
 def sin_activation(z):
+    '''
+    Hard sin function [-1, 1]
+    '''
     z = max(-60.0, min(60.0, 5.0 * z))
     return math.sin(z)
 
@@ -28,10 +37,38 @@ def gauss_activation(z):
     return math.exp(-5.0 * z**2)
 
 def dhn_gauss_activation(x):
-    sigma = 0.6
+    '''
+    Gaussian function as defined in DHN paper.
+    '''
+    # print("Input to DHN Gauss:", x)
+    sigma = 1/(math.sqrt(2*math.pi))
     mu = 0
     y = (1.0/(sigma * math.sqrt(2*math.pi)))
-    z = y * math.e^(-1*(x-mu)**2/(2*sigma)**2)
+    z = y * math.e**(-1*(x-mu)**2/(2*sigma)**2)
+    # print("Output from DHN Gauss:", z)
+    return z
+
+def dhn_gauss_activation_2(x):
+    '''
+    Gaussian function for DHN that checks for identity.
+    '''
+    # print("Input to DHN Guass 2:", x)
+    # sigma = 0.1
+    mu = 2
+    # y = (1.0/(sigma * math.sqrt(2*math.pi)))
+    # z = y * math.e**(-1*(x-mu)**2/(2*sigma)**2)
+    sigma = 0.01
+    z = math.e**(-1*(x-mu)**2/(2*sigma)**2)
+    # print("Output from DHN Gauss 2:", z/3.98)
+    return z
+
+def dhn_gauss_activation_3(x):
+    '''
+    Gaussian function for DHN that checks for identity.
+    '''
+    mu = 2
+    sigma = 0.01
+    z = math.e**(-1*(x-mu)**2/(2*sigma)**2)
     return z
 
 def relu_activation(z):
@@ -59,7 +96,6 @@ def inv_activation(z):
     else:
         return z
 
-
 def log_activation(z):
     z = max(1e-7, z)
     return math.log(z)
@@ -85,7 +121,8 @@ def square_activation(z):
 def cube_activation(z):
     return z ** 3
 
-
+def linear(x):
+    return x
 class InvalidActivationFunction(TypeError):
     pass
 
@@ -124,6 +161,9 @@ class ActivationFunctionSet(object):
         self.add('square', square_activation)
         self.add('cube', cube_activation)
         self.add('dhngauss', dhn_gauss_activation)
+        self.add('linear', linear)
+        self.add('dhngauss2', dhn_gauss_activation_2)
+        self.add('dhngauss3', dhn_gauss_activation_3)
 
     def add(self, name, function):
         validate_activation(function)

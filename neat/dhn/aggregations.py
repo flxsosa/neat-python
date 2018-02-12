@@ -36,11 +36,6 @@ def mean_aggregation(x):
     return mean(x)
 
 def foo(x):
-    '''
-    Takes an input array. If len(array) == 2,
-    subtracts the two values and returns result.
-    Else, simply returns their sum.
-    '''
     if len(x) != 2:
         return sum_aggregation(x)
     return abs(x[0]-x[1])

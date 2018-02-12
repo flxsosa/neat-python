@@ -81,6 +81,9 @@ class Population(object):
 
         k = 0
         while n is None or k < n:
+            print("=========================================================")
+            print("================================Evaluating Generation {0}".format(k))
+            print("=========================================================")
             k += 1
 
             self.reporters.start_generation(self.generation)
@@ -89,16 +92,25 @@ class Population(object):
             fitness_function(list(iteritems(self.population)), self.config)
 
             # Gather and report statistics.
+            # We start with no best
             best = None
+
+            # ITerate over the genomes in the population.
+            # Itervalues returns an iterator over the population dictionary's values
+            # which are genomes.
             for g in itervalues(self.population):
-                print(g)
-                print(g.fitness)
-                print(best)
+                # If the current genome's fitness is better than the best
+                # or if the best is not instantiated yet then reassign best
+                # accordingly
                 if best is None or g.fitness > best.fitness:
                     best = g
+            # Prints basic statistics out to terminal on current population after figuring
+            # out best genome
             self.reporters.post_evaluate(self.config, self.population, self.species, best)
 
             # Track the best genome ever seen.
+            # If this current generation's best is better than the global best,
+            # reassign as needed.
             if self.best_genome is None or best.fitness > self.best_genome.fitness:
                 self.best_genome = best
 

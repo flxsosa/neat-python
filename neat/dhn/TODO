@@ -1,0 +1,4 @@
+- Allow deletions of CPPNONs
+- Allow crossover
+- Allow connections going into output nodes to be deleted
+- Complete substrate sanitation 
